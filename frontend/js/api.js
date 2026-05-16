@@ -81,9 +81,9 @@ class ShopFlowAPI {
   }
 
   // ─── Health Checks ───
-  async checkHealth(serviceUrl) {
+  async checkHealth(healthPath) {
     try {
-      const res = await fetch(`${serviceUrl}/api/health`, { signal: AbortSignal.timeout(5000) });
+      const res = await fetch(healthPath, { signal: AbortSignal.timeout(5000) });
       return await res.json();
     } catch {
       return { status: 'unreachable', service: 'unknown' };
@@ -91,12 +91,10 @@ class ShopFlowAPI {
   }
 
   async checkAllHealth() {
-    const services = [
-      { name: 'Auth Service', url: CONFIG.AUTH_SERVICE_URL },
-      { name: 'Product Service', url: CONFIG.PRODUCT_SERVICE_URL },
-      { name: 'Order Service', url: CONFIG.ORDER_SERVICE_URL },
-      { name: 'Notification Worker', url: CONFIG.NOTIFICATION_WORKER_URL },
-    ];
+    const services = Object.entries(CONFIG.HEALTH_URLS).map(([name, path]) => ({
+      name,
+      url: path,
+    }));
 
     const results = await Promise.all(
       services.map(async (s) => {

@@ -336,9 +336,15 @@
   async function updateConnectionStatus() {
     const el = $('#connection-status');
     try {
-      await api.checkHealth(CONFIG.AUTH_SERVICE_URL);
-      el.className = 'connection-status connected';
-      el.querySelector('.status-text').textContent = 'Services Online';
+      const res = await fetch(CONFIG.HEALTH_URLS['Auth Service'], { signal: AbortSignal.timeout(5000) });
+      const data = await res.json();
+      if (data.status === 'healthy') {
+        el.className = 'connection-status connected';
+        el.querySelector('.status-text').textContent = 'Services Online';
+      } else {
+        el.className = 'connection-status disconnected';
+        el.querySelector('.status-text').textContent = 'Services Degraded';
+      }
     } catch {
       el.className = 'connection-status disconnected';
       el.querySelector('.status-text').textContent = 'Services Offline';

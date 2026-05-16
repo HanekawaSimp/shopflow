@@ -1,14 +1,22 @@
 /**
  * ShopFlow Frontend Configuration
  *
- * These URLs need to point to the backend services.
- * In production, these would be set at build/deploy time or served via a config endpoint.
+ * All API calls go through the nginx reverse proxy on the same origin.
+ * nginx routes requests to the correct backend service based on URL path.
  */
 const CONFIG = {
-  AUTH_SERVICE_URL: 'http://localhost:3001',
-  PRODUCT_SERVICE_URL: 'http://localhost:3002',
-  ORDER_SERVICE_URL: 'http://localhost:3003',
-  NOTIFICATION_WORKER_URL: 'http://localhost:3004',
+  // Empty string = same origin (requests go through nginx proxy)
+  AUTH_SERVICE_URL: '',
+  PRODUCT_SERVICE_URL: '',
+  ORDER_SERVICE_URL: '',
+
+  // Health check endpoints are proxied through unique paths
+  HEALTH_URLS: {
+    'Auth Service': '/health/auth',
+    'Product Service': '/health/product',
+    'Order Service': '/health/order',
+    'Notification Worker': '/health/notification',
+  },
 
   // Refresh interval for health checks (ms)
   HEALTH_CHECK_INTERVAL: 30000,
