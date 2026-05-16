@@ -1,0 +1,106 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: shopflow_admin
+      POSTGRES_PASSWORD: shopflow_password
+      POSTGRES_DB: shopflow_auth
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U shopflow_admin"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - shopflow_net
+
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - shopflow_net
+
+  auth-service:
+    build: ./auth-service
+    ports:
+      - "3001:3001"
+    environment:
+      DB_HOST: postgres
+      DB_USER: shopflow_admin
+      DB_PASSWORD: shopflow_password
+      DB_NAME: shopflow_auth
+      JWT_SECRET: my_development_secret
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - shopflow_net
+
+  product-service:
+    build: ./product-service
+    ports:
+      - "3002:3002"
+    environment:
+      DB_HOST: postgres
+      DB_USER: shopflow_admin
+      DB_PASSWORD: shopflow_password
+      DB_NAME: shopflow_products
+      REDIS_URL: redis://redis:6379/0
+      AUTH_SERVICE_URL: http://auth-service:3001
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - shopflow_net
+
+  order-service:
+    build: ./order-service
+    ports:
+      - "3003:3003"
+    environment:
+      DB_HOST: postgres
+      DB_USER: shopflow_admin
+      DB_PASSWORD: shopflow_password
+      DB_NAME: shopflow_orders
+      AUTH_SERVICE_URL: http://auth-service:3001
+      PRODUCT_SERVICE_URL: http://product-service:3002
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - shopflow_net
+
+  notification-worker:
+    build: ./notification-worker
+    environment:
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - shopflow_net
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "8080:80"
+    networks:
+      - shopflow_net
+
+networks:
+  shopflow_net:
+    driver: bridge
+
+volumes:
+  pgdata:

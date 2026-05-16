@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShopFlow — Admin Dashboard</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <!-- Login Screen -->
+        <div id="login-screen" class="screen active">
+            <div class="login-container">
+                <div class="login-header">
+                    <h1>🛒 ShopFlow</h1>
+                    <p>Admin Dashboard</p>
+                </div>
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="login-email">Email</label>
+                        <input type="email" id="login-email" placeholder="admin@shopflow.io" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" placeholder="admin12345" required>
+                    </div>
+                    <button type="submit" id="login-btn" class="btn btn-primary btn-full">Sign In</button>
+                    <div id="login-error" class="error-message hidden"></div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Dashboard Screen -->
+        <div id="dashboard-screen" class="screen">
+            <nav class="sidebar">
+                <div class="sidebar-header">
+                    <h2>🛒 ShopFlow</h2>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="#" class="nav-link active" data-section="overview">📊 Overview</a></li>
+                    <li><a href="#" class="nav-link" data-section="products">📦 Products</a></li>
+                    <li><a href="#" class="nav-link" data-section="orders">🧾 Orders</a></li>
+                    <li><a href="#" class="nav-link" data-section="health">💚 Service Health</a></li>
+                </ul>
+                <div class="sidebar-footer">
+                    <div id="user-info" class="user-info">
+                        <span id="user-name">Admin</span>
+                        <span id="user-role" class="badge">admin</span>
+                    </div>
+                    <button id="logout-btn" class="btn btn-ghost btn-sm">Logout</button>
+                </div>
+            </nav>
+
+            <main class="content">
+                <header class="content-header">
+                    <h1 id="page-title">Overview</h1>
+                    <div id="connection-status" class="connection-status">
+                        <span class="status-dot"></span>
+                        <span class="status-text">Checking...</span>
+                    </div>
+                </header>
+
+                <!-- Overview Section -->
+                <section id="section-overview" class="section active">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-label">Total Products</div>
+                            <div class="stat-value" id="stat-products">—</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Total Orders</div>
+                            <div class="stat-value" id="stat-orders">—</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Revenue</div>
+                            <div class="stat-value" id="stat-revenue">—</div>
+                        </div>
+                        <div class="stat-card warning">
+                            <div class="stat-label">Low Stock Items</div>
+                            <div class="stat-value" id="stat-low-stock">—</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3>Recent Orders</h3>
+                        <div id="recent-orders-table" class="table-container">
+                            <p class="muted">Loading...</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Products Section -->
+                <section id="section-products" class="section">
+                    <div class="section-toolbar">
+                        <input type="text" id="product-search" placeholder="Search products..." class="search-input">
+                        <select id="product-category-filter" class="select-input">
+                            <option value="">All Categories</option>
+                        </select>
+                    </div>
+                    <div id="products-table" class="table-container">
+                        <p class="muted">Loading products...</p>
+                    </div>
+                    <div id="products-pagination" class="pagination"></div>
+                </section>
+
+                <!-- Orders Section -->
+                <section id="section-orders" class="section">
+                    <div class="section-toolbar">
+                        <select id="order-status-filter" class="select-input">
+                            <option value="">All Statuses</option>
+                            <option value="pending">Pending</option>
+                            <option value="confirmed">Confirmed</option>
+                            <option value="processing">Processing</option>
+                            <option value="shipped">Shipped</option>
+                            <option value="delivered">Delivered</option>
+                            <option value="cancelled">Cancelled</option>
+                            <option value="refunded">Refunded</option>
+                        </select>
+                    </div>
+                    <div id="orders-table" class="table-container">
+                        <p class="muted">Loading orders...</p>
+                    </div>
+                    <div id="orders-pagination" class="pagination"></div>
+                </section>
+
+                <!-- Health Section -->
+                <section id="section-health" class="section">
+                    <div class="health-grid" id="health-cards">
+                        <p class="muted">Checking services...</p>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
